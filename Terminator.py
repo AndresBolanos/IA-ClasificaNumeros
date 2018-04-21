@@ -1,4 +1,5 @@
 ##################Imports section###################
+# -*- coding: cp1252 -*-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -19,23 +20,29 @@ class Neural_Network(object):
     def __init__(self):
         self.inputSize = 784
         self.outputSize = 10
-        self.hiddenSize = 128
+        self.hiddenSize1 = 512              #Primera capa de 512
+        self.hiddenSize2 = 128              #Segunda capa de 128
 
         #inicializo el W
-        self.W1 = np.random.randn(self.inputSize, self.hiddenSize) # (100, 128)
-        self.W2 = np.random.randn(self.hiddenSize, self.outputSize) # (100, 128)
+        self.W1 = np.random.randn(self.inputSize, self.hiddenSize1)     # (784, 512) entrada
+        self.W2 = np.random.randn(self.hiddenSize1, self.hiddenSize2)   # (512, 128) primera capa
+        self.W3 = np.random.randn(self.hiddenSize2, self.outputSize)    # (128, 10)  segunda capa
         
     def forward(self, X):
         self.z = np.dot(X, self.W1)
-        self.z2 = self.relu(self.z)             # activation function
+        self.z2 = self.relu(self.z)                     # activation function capa 2
         self.z3 = np.dot(self.z2,self.W2) 
-        output = self.relu(self.z3)             # final activation function
+        self.z4 = self.relu(self.z3)                    # activation function capa 2
+        self.z5 = np.dot(self.z4,self.W3)
+        output = self.relu(self.z5)                     # final activation function
+            
         print(output.shape)
-        return self.z 
+        return output 
 
     def relu(self,x):
         return np.maximum(x, 0, x)
 
+    #Aun no funciona
     def cross_entropy(predictions, targets, epsilon=1e-12):
         """
         Computes cross entropy between targets (encoded as one-hot vectors)
@@ -50,7 +57,7 @@ class Neural_Network(object):
         return ce
 
     
-
+#Así llaman a cross entropy loss en el ejemplo que encontre
 """
 predictions = np.array([[0.25,0.25,0.25,0.25],
                         [0.01,0.01,0.01,0.96]])
@@ -73,9 +80,9 @@ def Train():
     X = train_X[:100]       #Por el momento se toman las 100 primeras imagenes, debe ser aleatorio
     Y = train_Y[:100]
 
-    Y_vectorizado = np.zeros((len(X), len(X[0])))     #Creacion de labels vectorizados
+    Y_vectorizado = np.zeros((len(X), len(X[0])))       #Creacion de labels vectorizados para mandarlos a cross-entropy
     for i in range(len(Y)):                     
-        Y_vectorizado[i][int(Y[i])] = 1            #Se pone 1.0 en la posicion del vector
+        Y_vectorizado[i][int(Y[i])] = 1                 #Se pone 1.0 en la posicion del vector
 
     NN = Neural_Network()
     output = NN.forward(X)
